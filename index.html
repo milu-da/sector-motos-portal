@@ -373,18 +373,30 @@ async function buscar() {
   }
 }
 
+function formatFecha(fechaStr) {
+  if (!fechaStr) return '—'
+  // Manejar tanto '2026-04-30' como '2026-04-30T15:00:00.000Z'
+  const solo = fechaStr.split('T')[0]
+  const [y, m, d] = solo.split('-')
+  if (!y || !m || !d) return '—'
+  return new Date(Number(y), Number(m)-1, Number(d)).toLocaleDateString('es-AR', {year:'numeric', month:'long', day:'numeric'})
+}
+
 function renderResultado(moto, ordenes) {
   const activa = ordenes.find(o => ['en_curso','lista_para_retirar'].includes(o.estado))
   const estInfo = activa ? ESTADOS[activa.estado] : null
+  const visitas = ordenes.length
+
   document.getElementById('moto-header-wrap').innerHTML = `
     <div class="moto-card">
       <div class="moto-icon-wrap">🏍</div>
       <div class="moto-data">
         <div class="moto-name">${moto.marca} ${moto.modelo}${moto.anio?' ('+moto.anio+')':''}</div>
-        <div class="moto-pat">Patente: <strong>${moto.patente}</strong></div>
+        <div class="moto-pat">Patente: <strong>${moto.patente}</strong> · <span style="color:var(--plata)">${visitas} visita${visitas!==1?'s':''} al taller</span></div>
       </div>
       ${estInfo?`<span class="estado-badge ${estInfo.css}">${estInfo.label}</span>`:''}
     </div>`
+
   const listEl = document.getElementById('ordenes-list')
   if (!ordenes.length) {
     listEl.innerHTML = '<div class="empty">Todavía no hay historial de trabajos registrado para esta moto.</div>'
@@ -392,16 +404,22 @@ function renderResultado(moto, ordenes) {
     listEl.innerHTML = ordenes.map((o, i) => {
       const trabajos = o.trabajos_publicos || []
       const est = ESTADOS[o.estado] || { label: o.estado, css: 'eb-entregada' }
-      const fecha = o.fecha ? new Date(o.fecha+'T12:00:00').toLocaleDateString('es-AR',{year:'numeric',month:'long',day:'numeric'}) : '—'
+      const fechaIngreso = formatFecha(o.fecha)
+      const fechaEgreso  = o.fecha_egreso ? formatFecha(o.fecha_egreso) : null
+      const nroOrden = o.nro_orden ? o.nro_orden : '#' + String(ordenes.length - i).padStart(2,'0')
+
       const trabsHTML = trabajos.length
         ? trabajos.map(t=>`<div class="trab-row"><span class="trab-tipo ${t.tipo==='REP'?'tipo-rep':'tipo-mo'}">${t.tipo==='REP'?'REP.':'M.O.'}</span><span>${t.nombre}</span></div>`).join('')
         : '<p style="font-size:13px;color:var(--plata);padding-top:8px">Sin trabajos registrados</p>'
       const obsI = o.obs_ingreso ? `<div class="obs-block"><div class="obs-label">Observaciones al ingreso</div><div class="obs-text">${o.obs_ingreso}</div></div>` : ''
       const obsE = o.obs_extra   ? `<div class="obs-block" style="margin-top:8px"><div class="obs-label">Observaciones adicionales</div><div class="obs-text">${o.obs_extra}</div></div>` : ''
+
       return `<div class="orden-item">
         <div class="orden-header${i===0?' abierto':''}" onclick="toggleOrden(this)">
-          <span class="orden-numero">#${String(i+1).padStart(2,'0')}</span>
-          <span class="orden-fecha">${fecha}</span>
+          <span class="orden-numero">${nroOrden}</span>
+          <div style="flex:1;min-width:0">
+            <div class="orden-fecha">Ingreso: ${fechaIngreso}${fechaEgreso?' → Entrega: '+fechaEgreso:''}</div>
+          </div>
           ${o.km?`<span class="km-chip">${Number(o.km).toLocaleString('es-AR')} km</span>`:''}
           <span class="orden-estado-chip ${est.css}">${est.label}</span>
           <span class="orden-arrow">▾</span>
