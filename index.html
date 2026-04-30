@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector Motos — Estado de tu moto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro:    #0B090A;
+  --oscuro:   #161A1D;
+  --gris:     #2c2f38;
+  --gris2:    #3d474e;
+  --amarillo: #ffcd00;
+  --ambar:    #e6b800;
+  --rojo:     #BA181B;
+  --rojo2:    #E5383B;
+  --blanco:   #F5F3F4;
+  --plata:    #B1A7A6;
+  --texto:    #D3D3D3;
+}
+* { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--negro);
+  color: var(--blanco);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(255,205,0,.018) 60px, rgba(255,205,0,.018) 61px),
+    repeating-linear-gradient(0deg,  transparent, transparent 60px, rgba(255,205,0,.018) 60px, rgba(255,205,0,.018) 61px);
+  pointer-events: none;
+  z-index: 0;
+}
+/* HEADER */
+.header {
+  position: relative; z-index: 10;
+  background: var(--oscuro);
+  border-bottom: 3px solid var(--amarillo);
+  padding: 0 2rem;
+  display: flex; align-items: center;
+  height: 70px; overflow: hidden;
+}
+.header::after {
+  content: 'SECTOR MOTOS';
+  position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 90px; font-weight: 900;
+  color: rgba(255,205,0,.04);
+  letter-spacing: -2px; pointer-events: none; white-space: nowrap;
+}
+.header-brand { display: flex; align-items: center; gap: 14px }
+.header-logo {
+  width: 44px; height: 44px; background: var(--amarillo);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+}
+.header-logo svg { width: 26px; height: 26px; fill: var(--negro) }
+.header-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+}
+.header-name span { color: var(--amarillo) }
+.header-tag { font-size: 11px; color: var(--plata); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px }
+
+/* HERO */
+.hero {
+  position: relative; z-index: 1;
+  padding: 4rem 1rem 3rem; text-align: center;
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--amarillo);
+  background: rgba(255,205,0,.1); border: 1px solid rgba(255,205,0,.25);
+  border-radius: 4px; padding: 4px 14px; margin-bottom: 1.25rem;
+}
+.hero h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(42px, 8vw, 72px); font-weight: 900;
+  line-height: .95; letter-spacing: -.02em; text-transform: uppercase; margin-bottom: 1rem;
+}
+.hero h1 em { font-style: normal; color: var(--amarillo); display: block }
+.hero-sub {
+  font-size: 16px;
+  color: var(--blanco);
+  font-weight: 600;
+  max-width: 420px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 8px;
+  padding: 10px 20px;
+  letter-spacing: .01em;
+}
+
+/* SEARCH */
+.search-wrap { max-width: 520px; margin: 0 auto }
+.search-box {
+  background: var(--oscuro); border: 2px solid var(--gris2);
+  border-radius: 12px; padding: 1.5rem; transition: border-color .2s, box-shadow .2s;
+}
+.search-box:focus-within { border-color: var(--amarillo); box-shadow: 0 0 0 3px rgba(255,205,0,.12) }
+.search-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--plata); margin-bottom: 10px; display: block;
+}
+.search-row { display: flex; gap: 10px }
+.patente-input {
+  flex: 1; background: var(--gris); border: 2px solid var(--gris2); border-radius: 8px;
+  padding: 14px 18px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--blanco);
+  outline: none; transition: border-color .2s, background .2s; text-align: center;
+}
+.patente-input::placeholder { color: var(--gris2) }
+.patente-input:focus { border-color: var(--amarillo); background: #1e2228 }
+.btn-buscar {
+  padding: 14px 24px; background: var(--amarillo); color: var(--negro);
+  border: none; border-radius: 8px;
+  font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+  cursor: pointer; transition: background .2s, transform .1s; white-space: nowrap; flex-shrink: 0;
+}
+.btn-buscar:hover:not(:disabled) { background: var(--ambar); transform: translateY(-1px) }
+.btn-buscar:disabled { background: var(--gris2); color: var(--plata); cursor: not-allowed }
+.error-msg {
+  display: none; margin-top: 12px; padding: 12px 16px;
+  background: rgba(186,24,27,.15); border: 1px solid rgba(186,24,27,.4);
+  border-radius: 8px; font-size: 13px; color: var(--rojo2); text-align: center;
+}
+
+/* CONTAINER */
+.container { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; padding: 0 1rem 3rem }
+.result-card { display: none; margin-top: 2rem; animation: slideUp .35s ease }
+.result-card.visible { display: block }
+@keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+
+/* MOTO CARD */
+.moto-card {
+  background: var(--oscuro); border: 1px solid var(--gris2);
+  border-left: 4px solid var(--amarillo); border-radius: 10px;
+  padding: 1.25rem 1.5rem; margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.moto-icon-wrap {
+  width: 56px; height: 56px; background: rgba(255,205,0,.1);
+  border: 1px solid rgba(255,205,0,.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+}
+.moto-data { flex: 1 }
+.moto-name {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.moto-pat { font-size: 12px; color: var(--plata); margin-top: 3px; letter-spacing: .08em }
+.moto-pat strong { color: var(--amarillo) }
+.estado-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+  border-radius: 6px; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; flex-shrink: 0;
+}
+.eb-en_curso           { background: rgba(255,205,0,.12); color: var(--amarillo); border: 1px solid rgba(255,205,0,.3) }
+.eb-lista_para_retirar { background: rgba(34,197,94,.12);  color: #4ade80; border: 1px solid rgba(34,197,94,.3) }
+.eb-entregada          { background: rgba(177,167,166,.1); color: var(--plata); border: 1px solid rgba(177,167,166,.2) }
+
+/* HISTORIAL */
+.hist-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--plata); margin-bottom: 8px; padding-left: 4px;
+}
+.orden-item {
+  background: var(--oscuro); border: 1px solid var(--gris2); border-radius: 10px;
+  margin-bottom: 8px; overflow: hidden; transition: border-color .2s;
+}
+.orden-item:hover { border-color: rgba(255,205,0,.3) }
+.orden-header {
+  display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+  cursor: pointer; user-select: none; flex-wrap: wrap;
+}
+.orden-numero {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; color: var(--amarillo);
+  background: rgba(255,205,0,.08); border-radius: 4px; padding: 2px 8px; flex-shrink: 0;
+}
+.orden-fecha { font-size: 14px; font-weight: 600; color: var(--blanco); flex: 1 }
+.km-chip {
+  font-size: 11px; color: var(--plata); background: var(--gris);
+  border-radius: 20px; padding: 3px 10px; flex-shrink: 0;
+}
+.orden-estado-chip {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: .06em; padding: 3px 10px; border-radius: 4px; flex-shrink: 0;
+}
+.orden-arrow { font-size: 10px; color: var(--plata); transition: transform .25s; flex-shrink: 0 }
+.orden-header.abierto .orden-arrow { transform: rotate(180deg) }
+.orden-body { display: none; padding: 0 16px 14px; border-top: 1px solid var(--gris) }
+.orden-body.abierto { display: block }
+.trab-list { padding-top: 10px }
+.trab-row {
+  display: flex; align-items: center; gap: 10px; padding: 7px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05); font-size: 13px; color: var(--texto);
+}
+.trab-row:last-child { border-bottom: none }
+.trab-tipo {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; flex-shrink: 0; letter-spacing: .06em;
+}
+.tipo-mo  { background: rgba(255,205,0,.1);  color: var(--amarillo) }
+.tipo-rep { background: rgba(186,24,27,.15); color: var(--rojo2) }
+.obs-block {
+  margin-top: 10px; padding: 10px 12px;
+  background: rgba(255,255,255,.03); border-left: 2px solid var(--gris2); border-radius: 0 6px 6px 0;
+}
+.obs-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--plata); margin-bottom: 4px }
+.obs-text  { font-size: 12px; color: var(--plata); line-height: 1.6 }
+
+/* TALLER INFO */
+.taller-info {
+  margin-top: 2.5rem; background: var(--oscuro);
+  border: 1px solid var(--gris2); border-top: 3px solid var(--rojo);
+  border-radius: 10px; padding: 1.25rem 1.5rem;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center;
+}
+.info-item { display: flex; flex-direction: column; align-items: center; gap: 6px }
+.info-icon {
+  width: 38px; height: 38px; background: rgba(255,205,0,.1);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px;
+}
+.info-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--plata) }
+.info-val { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--blanco); line-height: 1.4 }
+.info-val a { color: var(--amarillo); text-decoration: none }
+.info-val a:hover { text-decoration: underline }
+
+/* EMPTY / SPINNER */
+.empty { text-align: center; padding: 2.5rem 1rem; color: var(--plata); font-size: 14px }
+.spinner {
+  display: inline-block; width: 18px; height: 18px;
+  border: 2px solid var(--gris2); border-top-color: var(--amarillo);
+  border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* FOOTER */
+.footer {
+  position: relative; z-index: 1; text-align: center;
+  padding: 1.5rem; font-size: 11px; color: var(--gris2); letter-spacing: .06em;
+  border-top: 1px solid var(--gris);
+}
+.footer strong { color: var(--plata) }
+
+@media (max-width: 520px) {
+  .hero { padding: 3rem 1rem 2rem }
+  .hero h1 { font-size: 42px }
+  .taller-info { grid-template-columns: 1fr }
+  .search-row { flex-direction: column }
+  .patente-input { text-align: left; font-size: 20px }
+  .moto-card { flex-direction: column; text-align: center }
+  .estado-badge { margin: 0 auto }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo" style="font-size:28px;background:var(--amarillo);">🏍</div>
+    <div>
+      <div class="header-name">Sector <span>Motos</span></div>
+      <div class="header-tag">Taller mecánico integral</div>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">Portal del cliente</div>
+  <h1>¿Cómo va<em>tu moto?</em></h1>
+  <p class="hero-sub">Colocá tu patente para conocer el estado actual de tu moto en nuestro taller.</p>
+  <div class="search-wrap">
+    <div class="search-box">
+      <span class="search-label">Patente del vehículo</span>
+      <div class="search-row">
+        <input type="text" id="patente-input" class="patente-input" placeholder="ABC123" maxlength="10"
+          oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')buscar()"
+          autocomplete="off" spellcheck="false">
+        <button class="btn-buscar" id="btn-buscar" onclick="buscar()">Buscar →</button>
+      </div>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="result-card" id="result-card">
+    <div id="moto-header-wrap"></div>
+    <p class="hist-title">Historial de trabajos</p>
+    <div id="ordenes-list"></div>
+  </div>
+
+  <div class="taller-info" id="taller-info" style="display:none">
+    <div class="info-item">
+      <div class="info-icon">📍</div>
+      <div class="info-label">Dirección</div>
+      <div class="info-val" id="info-direccion"></div>
+    </div>
+    <div class="info-item">
+      <div class="info-icon">💬</div>
+      <div class="info-label">WhatsApp</div>
+      <div class="info-val" id="info-wa"></div>
+    </div>
+    <div class="info-item">
+      <div class="info-icon">🕐</div>
+      <div class="info-label">Horario</div>
+      <div class="info-val" id="info-horario"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <strong>Sector Motos</strong> · Av. Gral. Mosconi 3422, CABA · Todos los derechos reservados
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://tazpyfhhiibwnayybpyx.supabase.co'
+const SUPABASE_KEY = 'sb_publishable_NelXmzFJnHPjeuvlSUe2-A_O_l3imgU'
+
+function supaFetch(path) {
+  return fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json' }
+  }).then(r => r.json())
+}
+
+const ESTADOS = {
+  en_curso:           { label: '🔧 En taller',         css: 'eb-en_curso' },
+  lista_para_retirar: { label: '✅ Lista para retirar', css: 'eb-lista_para_retirar' },
+  entregada:          { label: '✓ Entregada',           css: 'eb-entregada' }
+}
+
+async function buscar() {
+  const patente = document.getElementById('patente-input').value.trim().toUpperCase()
+  if (!patente) return
+  const btn = document.getElementById('btn-buscar')
+  const errorEl = document.getElementById('error-msg')
+  const card = document.getElementById('result-card')
+  btn.disabled = true
+  btn.innerHTML = '<span class="spinner"></span> Buscando…'
+  errorEl.style.display = 'none'
+  card.classList.remove('visible')
+  try {
+    const motos = await supaFetch('motos_publicas?patente=eq.' + encodeURIComponent(patente) + '&select=*')
+    if (!motos?.length) {
+      errorEl.innerHTML = 'No encontramos ninguna moto con la patente <strong>' + patente + '</strong> en nuestro sistema.'
+      errorEl.style.display = 'block'
+      return
+    }
+    const moto = motos[0]
+    const ordenes = await supaFetch('ordenes_publicas?moto_id=eq.' + moto.id + '&select=*,trabajos_publicos(*)&order=fecha.desc')
+    renderResultado(moto, ordenes || [])
+  } catch(e) {
+    errorEl.innerHTML = 'Error al conectar. Intentá de nuevo en unos segundos.'
+    errorEl.style.display = 'block'
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = 'Buscar →'
+  }
+}
+
+function renderResultado(moto, ordenes) {
+  const activa = ordenes.find(o => ['en_curso','lista_para_retirar'].includes(o.estado))
+  const estInfo = activa ? ESTADOS[activa.estado] : null
+  document.getElementById('moto-header-wrap').innerHTML = `
+    <div class="moto-card">
+      <div class="moto-icon-wrap">🏍</div>
+      <div class="moto-data">
+        <div class="moto-name">${moto.marca} ${moto.modelo}${moto.anio?' ('+moto.anio+')':''}</div>
+        <div class="moto-pat">Patente: <strong>${moto.patente}</strong></div>
+      </div>
+      ${estInfo?`<span class="estado-badge ${estInfo.css}">${estInfo.label}</span>`:''}
+    </div>`
+  const listEl = document.getElementById('ordenes-list')
+  if (!ordenes.length) {
+    listEl.innerHTML = '<div class="empty">Todavía no hay historial de trabajos registrado para esta moto.</div>'
+  } else {
+    listEl.innerHTML = ordenes.map((o, i) => {
+      const trabajos = o.trabajos_publicos || []
+      const est = ESTADOS[o.estado] || { label: o.estado, css: 'eb-entregada' }
+      const fecha = o.fecha ? new Date(o.fecha+'T12:00:00').toLocaleDateString('es-AR',{year:'numeric',month:'long',day:'numeric'}) : '—'
+      const trabsHTML = trabajos.length
+        ? trabajos.map(t=>`<div class="trab-row"><span class="trab-tipo ${t.tipo==='REP'?'tipo-rep':'tipo-mo'}">${t.tipo==='REP'?'REP.':'M.O.'}</span><span>${t.nombre}</span></div>`).join('')
+        : '<p style="font-size:13px;color:var(--plata);padding-top:8px">Sin trabajos registrados</p>'
+      const obsI = o.obs_ingreso ? `<div class="obs-block"><div class="obs-label">Observaciones al ingreso</div><div class="obs-text">${o.obs_ingreso}</div></div>` : ''
+      const obsE = o.obs_extra   ? `<div class="obs-block" style="margin-top:8px"><div class="obs-label">Observaciones adicionales</div><div class="obs-text">${o.obs_extra}</div></div>` : ''
+      return `<div class="orden-item">
+        <div class="orden-header${i===0?' abierto':''}" onclick="toggleOrden(this)">
+          <span class="orden-numero">#${String(i+1).padStart(2,'0')}</span>
+          <span class="orden-fecha">${fecha}</span>
+          ${o.km?`<span class="km-chip">${Number(o.km).toLocaleString('es-AR')} km</span>`:''}
+          <span class="orden-estado-chip ${est.css}">${est.label}</span>
+          <span class="orden-arrow">▾</span>
+        </div>
+        <div class="orden-body${i===0?' abierto':''}">
+          <div class="trab-list">${trabsHTML}</div>${obsI}${obsE}
+        </div>
+      </div>`
+    }).join('')
+  }
+  document.getElementById('result-card').classList.add('visible')
+  document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function toggleOrden(h) {
+  h.classList.toggle('abierto')
+  h.nextElementSibling.classList.toggle('abierto')
+}
+
+const p = new URLSearchParams(window.location.search).get('patente')
+if (p) { document.getElementById('patente-input').value = p.toUpperCase(); buscar() }
+
+async function cargarConfig() {
+  try {
+    const rows = await supaFetch('config_publica?id=eq.1&select=data')
+    if (!rows?.length || !rows[0]?.data) return
+    const d = rows[0].data
+
+    // Solo mostrar el card si hay al menos un campo cargado
+    const tieneDatos = d.nombre || d.direccion || d.wa || d.horario
+    if (!tieneDatos) return
+
+    document.getElementById('taller-info').style.display = 'grid'
+
+    if (d.nombre) {
+      // Última palabra en amarillo, el resto en blanco
+      const palabras = d.nombre.trim().split(' ')
+      const ultima = palabras.pop()
+      const resto = palabras.join(' ')
+      const nombreHTML = resto ? `${resto} <span>${ultima}</span>` : `<span>${ultima}</span>`
+      document.querySelector('.header-name').innerHTML = nombreHTML
+      document.title = d.nombre + ' — Estado de tu moto'
+      const footerStrong = document.querySelector('.footer strong')
+      if (footerStrong) footerStrong.textContent = d.nombre
+    }
+    if (d.slogan) {
+      document.querySelector('.header-tag').textContent = d.slogan
+    }
+    if (d.direccion) {
+      document.getElementById('info-direccion').innerHTML = d.direccion.replace(',', '<br>')
+      const footer = document.querySelector('.footer')
+      if (footer) footer.innerHTML = `<strong>${d.nombre || 'Sector Motos'}</strong> · ${d.direccion} · Todos los derechos reservados`
+    }
+    if (d.wa) {
+      const num = d.wa.replace(/\D/g, '')
+      const numFull = num.startsWith('54') ? num : '54' + num
+      const numDisplay = '+' + numFull.replace(/(\d{2})(\d{1})(\d{2})(\d{4})(\d{4})/, '$1 $2 $3 $4-$5')
+      document.getElementById('info-wa').innerHTML = `<a href="https://wa.me/${numFull}" target="_blank">${numDisplay}</a>`
+    }
+    if (d.horario) {
+      document.getElementById('info-horario').innerHTML = d.horario.replace(/\n/g, '<br>')
+    }
+  } catch(e) {
+    // Si falla, el card queda oculto — no pasa nada
+  }
+}
+cargarConfig()
+</script>
+</body>
+</html>
