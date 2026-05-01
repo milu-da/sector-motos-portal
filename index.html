@@ -414,6 +414,12 @@ function renderResultado(moto, ordenes) {
       const obsI = o.obs_ingreso ? `<div class="obs-block"><div class="obs-label">Observaciones al ingreso</div><div class="obs-text">${o.obs_ingreso}</div></div>` : ''
       const obsE = o.obs_extra   ? `<div class="obs-block" style="margin-top:8px"><div class="obs-label">Observaciones adicionales</div><div class="obs-text">${o.obs_extra}</div></div>` : ''
 
+      const videoBtn = o.video_url
+        ? `<a href="${o.video_url}" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 16px;background:#FF0000;color:#fff;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-decoration:none;transition:background .2s"
+            onmouseover="this.style.background='#cc0000'" onmouseout="this.style.background='#FF0000'">
+            ▶ Ver video del trabajo
+          </a>` : ''
       return `<div class="orden-item">
         <div class="orden-header${i===0?' abierto':''}" onclick="toggleOrden(this)">
           <span class="orden-numero">${nroOrden}</span>
@@ -426,6 +432,7 @@ function renderResultado(moto, ordenes) {
         </div>
         <div class="orden-body${i===0?' abierto':''}">
           <div class="trab-list">${trabsHTML}</div>${obsI}${obsE}
+          ${videoBtn}
         </div>
       </div>`
     }).join('')
