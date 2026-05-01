@@ -362,7 +362,7 @@ async function buscar() {
       return
     }
     const moto = motos[0]
-    const ordenes = await supaFetch('ordenes_publicas?moto_id=eq.' + moto.id + '&select=*,trabajos_publicos(*)&order=fecha.desc')
+    const ordenes = await supaFetch('ordenes_publicas?moto_id=eq.' + moto.id + '&select=*,trabajos_publicos(*)&order=fecha.desc,nro_orden.desc')
     renderResultado(moto, ordenes || [])
   } catch(e) {
     errorEl.innerHTML = 'Error al conectar. Intentá de nuevo en unos segundos.'
