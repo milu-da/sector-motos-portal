@@ -414,12 +414,20 @@ function renderResultado(moto, ordenes) {
       const obsI = o.obs_ingreso ? `<div class="obs-block"><div class="obs-label">Observaciones al ingreso</div><div class="obs-text">${o.obs_ingreso}</div></div>` : ''
       const obsE = o.obs_extra   ? `<div class="obs-block" style="margin-top:8px"><div class="obs-label">Observaciones adicionales</div><div class="obs-text">${o.obs_extra}</div></div>` : ''
 
-      const videoBtn = o.video_url
-        ? `<a href="${o.video_url}" target="_blank" rel="noopener"
-            style="display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 16px;background:#FF0000;color:#fff;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-decoration:none;transition:background .2s"
+      let videoUrls = []
+      try {
+        const parsed = JSON.parse(o.video_url)
+        const isRealVideo = u => u && u.length > 0 && !/^https?:\/\/(www\.)?youtube\.com\/?$/.test(u) && !/^https?:\/\/youtu\.be\/?$/.test(u)
+      videoUrls = Array.isArray(parsed) ? parsed.filter(isRealVideo) : (parsed && isRealVideo(parsed) ? [parsed] : [])
+      } catch(e) {
+        if (o.video_url) videoUrls = [o.video_url]
+      }
+      const videoBtn = videoUrls.length
+        ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">${videoUrls.map((url, idx) => `<a href="${url}" target="_blank" rel="noopener"
+            style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:#FF0000;color:#fff;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-decoration:none;transition:background .2s"
             onmouseover="this.style.background='#cc0000'" onmouseout="this.style.background='#FF0000'">
-            ▶ Ver video del trabajo
-          </a>` : ''
+            ▶ Ver video del trabajo${videoUrls.length > 1 ? ' parte ' + (idx + 1) : ''}
+          </a>`).join('')}</div>` : ''
       return `<div class="orden-item">
         <div class="orden-header${i===0?' abierto':''}" onclick="toggleOrden(this)">
           <span class="orden-numero">${nroOrden}</span>
